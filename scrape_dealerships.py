@@ -1,24 +1,33 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 import time
 import sqlite3
 
-# Initialize Selenium WebDriver
-chrome_options = Options()
-chrome_options.add_argument("--headless")  # Run in headless mode
-service = Service('/path/to/chromedriver')  # Update this path
-driver = webdriver.Chrome(service=service, options=chrome_options)
+# Initialize the WebDriver (use the path if needed)
+options = Options()
+options.add_argument("--headless")  # Headless mode if you don't need the browser to be visible
+driver = webdriver.Chrome(options=options)
 
-# Open Gelbe Seiten and search for car dealerships
-driver.get("https://www.gelbeseiten.de/")
-search_box = driver.find_element(By.NAME, "keywords")  # Search input field
-search_box.send_keys("Autohaus")  # Search for car dealerships
-search_box.send_keys(Keys.RETURN)
-time.sleep(3)  # Allow time for the page to load
+# Open the target website
+driver.get("https://www.gelbeseiten.de")
+
+try:
+    # Wait until the search box is visible and interactable (max 10 seconds)
+    search_box = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.NAME, "keyword"))  # Replace with the actual attribute, e.g., NAME or ID
+    )
+    search_box.send_keys("Autohaus")  # Search for car dealerships
+    search_box.submit()
+except Exception as e:
+    print(f"An error occurred: {e}")
+finally:
+    driver.quit()
 
 # Parse the search results using BeautifulSoup
 soup = BeautifulSoup(driver.page_source, "html.parser")
