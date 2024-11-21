@@ -5,6 +5,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.alert import Alert
 from bs4 import BeautifulSoup
 import time
 import sqlite3
@@ -16,6 +17,8 @@ driver = webdriver.Chrome(options=options)
 
 # Open the target website
 driver.get("https://www.gelbeseiten.de")
+a = Alert(driver)
+a.accept()
 
 try:
     # Wait until the search box is visible and interactable (max 10 seconds)
